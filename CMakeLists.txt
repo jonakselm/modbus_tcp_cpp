@@ -3,11 +3,14 @@ project(modbus_test)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-add_executable(modbus_server server.cpp)
+add_executable(modbus_server source/server.cpp source/MBServer.cpp)
 target_link_libraries(modbus_server PRIVATE modbus)
+target_include_directories(modbus_server PRIVATE include)
 
-add_executable(modbus_write write.cpp)
+add_executable(modbus_write source/write.cpp)
 target_link_libraries(modbus_write PRIVATE modbus)
+target_include_directories(modbus_write PRIVATE include)
 
-add_executable(modbus_read read.cpp)
+add_executable(modbus_read source/read.cpp)
 target_link_libraries(modbus_read PRIVATE modbus)
+target_include_directories(modbus_read PRIVATE include)
