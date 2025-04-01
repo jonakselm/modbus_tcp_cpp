@@ -13,10 +13,19 @@ MBServer::MBServer(int port)
 MBServer::MBServer(const std::string &ip)
 	: MBServer::MBServer(ip, 502) {}
 
-MBServer::MBServer(const std::string &ip, int port)
-	: MBServer::MBServer(ip, port, {{0,0},{0,0},{0,10},{0,0}}) {}
+MBServer::MBServer(const MBMapping &mapping)
+	: MBServer::MBServer("0.0.0.0", 502, mapping) {}
 
-MBServer::MBServer(const std::string &ip, int port, MappingData mapping)
+MBServer::MBServer(const std::string &ip, int port)
+	: MBServer::MBServer(ip, port, {{0,0},{0,0},{0,1024},{0,1024}}) {}
+
+MBServer::MBServer(const std::string &ip, const MBMapping &mapping)
+	: MBServer::MBServer(ip, 502, mapping) {}
+
+MBServer::MBServer(int port, const MBMapping &mapping)
+	: MBServer::MBServer("0.0.0.0", port, mapping) {}
+
+MBServer::MBServer(const std::string &ip, int port, const MBMapping &mapping)
 	: m_ip(ip), m_port(port), m_fdMax(0), m_lastRc(0)
 {
 	m_mb = ModbusUniquePtr(modbus_new_tcp(ip.c_str(), port));
@@ -111,5 +120,50 @@ void MBServer::update()
 				}
 			}
 		}
+	}
+}
+
+void MBServer::writeHoldingRegisterInt(int address, uint16_t value)
+{
+	writeHoldingRegisterInt(address, std::vector<uint16_t>(1, value));
+}
+
+void MBServer::writeHoldingRegisterInt(int address, const std::vector<uint16_t> &values)
+{
+	modbus_write_registers(m_mb.get(), address, values.size(), values.data());
+}
+
+void MBServer::writeHoldingRegisterFloat(int address, float value)
+{
+	writeHoldingRegisterFloat(address, std::vector<float>(1, value));
+}
+
+void MBServer::writeHoldingRegisterFloat(int address, const std::vector<float> &values)
+{
+	// All sizes are double because float takes two registers
+	int nb = values.size() * 2;
+	for (int i = 0; i < values.size(); i++)
+	{
+		if (address + i * 2 + 2 > m_mapping->nb_registers)
+		{
+			nb = i * 2;
+			std::cerr << "Exceeded max registers" << std::endl;
+			break;
+		}
+		modbus_set_float_cdab(values[i], m_mapping->tab_registers + i * 2);
+	}
+	modbus_write_registers(m_mb.get(), address, nb, m_mapping->tab_registers);
+}
+
+void MBServer::writeInputRegisterInt(int address, uint16_t value)
+{
+	writeInputRegisterInt(address, std::vector<uint16_t>(1, value));
+}
+
+void MBServer::writeInputRegisterInt(int address, const std::vector<uint16_t> &values)
+{
+	for (int i = 0; i < values.size(); i++)
+	{
+		m_mapping->tab_input_registers[i] = values[i];
 	}
 }

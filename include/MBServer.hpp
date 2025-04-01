@@ -2,6 +2,7 @@
 #include <string>
 #include <memory>
 #include <array>
+#include <vector>
 
 struct MappingPair
 {
@@ -9,7 +10,7 @@ struct MappingPair
 	int amount = 0;
 };
 
-struct MappingData
+struct MBMapping
 {
 	MappingPair bits;
 	MappingPair inputBits;
@@ -43,8 +44,11 @@ public:
 	MBServer();
 	MBServer(int port);
 	MBServer(const std::string &ip);
+	MBServer(const MBMapping &mapping);
 	MBServer(const std::string &ip, int port);
-	MBServer(const std::string &ip, int port, MappingData mapping);
+	MBServer(const std::string &ip, const MBMapping &mapping);
+	MBServer(int port, const MBMapping &mapping);
+	MBServer(const std::string &ip, int port, const MBMapping &mapping);
 
 	MBServer(MBServer &) = delete;
 	MBServer(const MBServer &) = delete;
@@ -56,7 +60,17 @@ public:
 
 	~MBServer() = default;
 
+
 	void update();
+
+
+	void writeHoldingRegisterInt(int address, uint16_t value);
+	void writeHoldingRegisterInt(int address, const std::vector<uint16_t> &values);
+	void writeHoldingRegisterFloat(int address, float value);
+	void writeHoldingRegisterFloat(int address, const std::vector<float> &values);
+
+	void writeInputRegisterInt(int address, uint16_t value);
+	void writeInputRegisterInt(int address, const std::vector<uint16_t> &values);
 
 private:
 	ModbusUniquePtr m_mb;
