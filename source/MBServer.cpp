@@ -123,22 +123,22 @@ void MBServer::update()
 	}
 }
 
-void MBServer::writeHoldingRegisterInt(int address, uint16_t value)
+void MBServer::writeHoldingRegister(int address, uint16_t value)
 {
-	writeHoldingRegisterInt(address, std::vector<uint16_t>(1, value));
+	writeHoldingRegister(address, std::vector<uint16_t>(1, value));
 }
 
-void MBServer::writeHoldingRegisterInt(int address, const std::vector<uint16_t> &values)
+void MBServer::writeHoldingRegister(int address, const std::vector<uint16_t> &values)
 {
 	modbus_write_registers(m_mb.get(), address, values.size(), values.data());
 }
 
-void MBServer::writeHoldingRegisterFloat(int address, float value)
+void MBServer::writeHoldingRegister(int address, float value)
 {
-	writeHoldingRegisterFloat(address, std::vector<float>(1, value));
+	writeHoldingRegister(address, std::vector<float>(1, value));
 }
 
-void MBServer::writeHoldingRegisterFloat(int address, const std::vector<float> &values)
+void MBServer::writeHoldingRegister(int address, const std::vector<float> &values)
 {
 	// All sizes are double because float takes two registers
 	int nb = values.size() * 2;
@@ -155,15 +155,70 @@ void MBServer::writeHoldingRegisterFloat(int address, const std::vector<float> &
 	modbus_write_registers(m_mb.get(), address, nb, m_mapping->tab_registers);
 }
 
-void MBServer::writeInputRegisterInt(int address, uint16_t value)
+void MBServer::writeInputRegister(int address, uint16_t value)
 {
-	writeInputRegisterInt(address, std::vector<uint16_t>(1, value));
+	writeInputRegister(address, std::vector<uint16_t>(1, value));
 }
 
-void MBServer::writeInputRegisterInt(int address, const std::vector<uint16_t> &values)
+void MBServer::writeInputRegister(int address, const std::vector<uint16_t> &values)
 {
 	for (int i = 0; i < values.size(); i++)
 	{
 		m_mapping->tab_input_registers[i] = values[i];
 	}
+}
+
+uint16_t MBServer::readHoldingRegisterInt(int address) const
+{
+	return readHoldingRegisterInt(address, 1).front();
+}
+
+std::vector<uint16_t> MBServer::readHoldingRegisterInt(int address, int nb) const
+{
+	std::vector<uint16_t> v(nb);
+	if (nb <= m_mapping->nb_registers)
+	{
+		modbus_read_registers(m_mb.get(), address, nb, v.data());
+	}
+	else
+	{
+		std::cerr << "Trying to read from non-existant registers" << std::endl;
+	}
+	return v;
+}
+
+float MBServer::readHoldingRegisterFloat(int address) const
+{
+	return readHoldingRegisterFloat(address, 1).front();
+}
+
+std::vector<float> MBServer::readHoldingRegisterFloat(int address, int nb) const
+{
+	// All sizes are double because float takes two registers
+	std::vector<float> v(nb);
+	for (int i = 0; i < v.size(); i++)
+	{
+		if (address + nb * 2 > m_mapping->nb_input_registers)
+		{
+			std::cerr << "Trying to read from non-existant registers" << std::endl;
+			break;
+		}
+		v[i] = modbus_get_float_cdab(m_mapping->tab_registers + address + i * 2);
+	}
+	return v;
+}
+
+uint16_t MBServer::readInputRegisterInt(int address) const
+{
+	return readInputRegisterInt(address, 1).front();
+}
+
+std::vector<uint16_t> MBServer::readInputRegisterInt(int address, int nb) const
+{
+	std::vector<uint16_t> v(nb);
+	for (int i = 0; i < v.size(); i++)
+	{
+		v.push_back(m_mapping->tab_input_registers[i]);
+	}
+	return v;
 }

@@ -1,9 +1,5 @@
-#include "modbus/modbus.h"
-#include <cerrno>
-#include <cstdio>
-#include <cstring>
-#include <sys/socket.h>
 #include "MBServer.hpp"
+#include <iostream>
 
 int main()
 {
@@ -12,9 +8,14 @@ int main()
 	std::vector<float> v;
 	v.emplace_back(4.f);
 	v.emplace_back(6.3f);
-	server.writeHoldingRegisterFloat(0,2.3);
+	server.writeHoldingRegister(0, v);
 	for (;;)
 	{
+		v = server.readHoldingRegisterFloat(0, 2);
+		for (auto f : v)
+		{
+			std::cout << f << std::endl;
+		}
 		server.update();
 	}
 

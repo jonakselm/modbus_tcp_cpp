@@ -64,13 +64,22 @@ public:
 	void update();
 
 
-	void writeHoldingRegisterInt(int address, uint16_t value);
-	void writeHoldingRegisterInt(int address, const std::vector<uint16_t> &values);
-	void writeHoldingRegisterFloat(int address, float value);
-	void writeHoldingRegisterFloat(int address, const std::vector<float> &values);
+	void writeHoldingRegister(int address, uint16_t value);
+	void writeHoldingRegister(int address, const std::vector<uint16_t> &values);
+	void writeHoldingRegister(int address, float value);
+	void writeHoldingRegister(int address, const std::vector<float> &values);
 
-	void writeInputRegisterInt(int address, uint16_t value);
-	void writeInputRegisterInt(int address, const std::vector<uint16_t> &values);
+	void writeInputRegister(int address, uint16_t value);
+	void writeInputRegister(int address, const std::vector<uint16_t> &values);
+
+
+	uint16_t readHoldingRegisterInt(int address) const;
+	std::vector<uint16_t> readHoldingRegisterInt(int address, int nb) const;
+	float readHoldingRegisterFloat(int address) const;
+	std::vector<float> readHoldingRegisterFloat(int address, int nb) const;
+
+	uint16_t readInputRegisterInt(int address) const;
+	std::vector<uint16_t> readInputRegisterInt(int address, int nb) const;
 
 private:
 	ModbusUniquePtr m_mb;
