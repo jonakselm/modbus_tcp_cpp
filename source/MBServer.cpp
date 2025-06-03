@@ -71,7 +71,7 @@ void MBServer::update()
 	for (int sockfd = 0; sockfd <= m_fdMax; sockfd++)
 	{
 		if (FD_ISSET(sockfd, &fdset))
-{
+		{
 			if (sockfd == m_serverSocket)
 			{
 				int clientfd = accept(m_serverSocket, nullptr, nullptr);
@@ -108,7 +108,7 @@ void MBServer::update()
 				else if (m_lastRc == -1)
 				{
 					std::cout << "Client disconnected fd: " << sockfd << std::endl;
-					
+
 					close(sockfd);
 
 					FD_CLR(sockfd, &m_refset);
@@ -170,12 +170,12 @@ void MBServer::writeInputRegister(int address, const std::vector<uint16_t> &valu
 
 void MBServer::writeCoil(int address, bool value)
 {
-  modbus_write_bit(m_mb.get(), address, static_cast<int>(value));
+	modbus_write_bit(m_mb.get(), address, static_cast<int>(value));
 }
 
 void MBServer::writeDiscreteInput(int address, bool value)
 {
-  m_mapping->tab_input_bits[address] = static_cast<int>(value); 
+	m_mapping->tab_input_bits[address] = static_cast<int>(value); 
 }
 
 uint16_t MBServer::readHoldingRegisterInt(int address) const
@@ -235,14 +235,14 @@ std::vector<uint16_t> MBServer::readInputRegisterInt(int address, int nb) const
 
 bool MBServer::readCoil(int address)
 {
-  uint8_t ret;
-  modbus_read_bits(m_mb.get(), address, 1, &ret);
-  return static_cast<bool>(ret);
+	uint8_t ret;
+	modbus_read_bits(m_mb.get(), address, 1, &ret);
+	return static_cast<bool>(ret);
 }
 
 bool MBServer::readDiscreteInput(int address)
 {
-  uint8_t ret;
-  modbus_read_input_bits(m_mb.get(), address, 1, &ret);
-  return static_cast<bool>(ret);
+	uint8_t ret;
+	modbus_read_input_bits(m_mb.get(), address, 1, &ret);
+	return static_cast<bool>(ret);
 }

@@ -72,8 +72,8 @@ public:
 	void writeInputRegister(int address, uint16_t value);
 	void writeInputRegister(int address, const std::vector<uint16_t> &values);
 
-  void writeCoil(int address, bool value);
-  void writeDiscreteInput(int address, bool value);
+	void writeCoil(int address, bool value);
+	void writeDiscreteInput(int address, bool value);
 
 
 	uint16_t readHoldingRegisterInt(int address) const;
@@ -84,8 +84,8 @@ public:
 	uint16_t readInputRegisterInt(int address) const;
 	std::vector<uint16_t> readInputRegisterInt(int address, int nb) const;
 
-  bool readCoil(int address);
-  bool readDiscreteInput(int address);
+	bool readCoil(int address);
+	bool readDiscreteInput(int address);
 
 private:
 	ModbusUniquePtr m_mb;
