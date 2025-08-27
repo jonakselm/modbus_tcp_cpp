@@ -1,5 +1,5 @@
 # Dependencies
-libmodbus
+- libmodbus
 
 # What does it do?
 This library is a wrapper around the c library libmodbus, which is a general purpose modbus library.
